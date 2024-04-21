@@ -1,4 +1,4 @@
-use std::{fs};
+use std::fs;
 
 use chrono::{DateTime, Local, NaiveDateTime, TimeZone};
 use clap::Parser as _;

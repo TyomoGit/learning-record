@@ -1,10 +1,9 @@
 use chrono::{DateTime, Datelike, Local, NaiveDateTime, NaiveTime};
 
-use crate::ast::{self, EventInfo};
+use crate::ast;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Error {
-    NotPast(Vec<EventInfo>),
 }
 
 pub fn calc_weekly_records(file: &ast::File, today: DateTime<Local>) -> Result<NaiveTime, Error> {
@@ -35,8 +34,6 @@ pub fn calc_weekly_records(file: &ast::File, today: DateTime<Local>) -> Result<N
     .with_time(start_time)
     .unwrap()
     .naive_local();
-
-    dbg!(start_weekday, start_date, start_time);
 
     let mut sum: NaiveTime = NaiveTime::from_hms_opt(0, 0, 0).unwrap();
     for day_record in &file.records {

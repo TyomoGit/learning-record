@@ -305,8 +305,7 @@ impl Parser {
     fn expect_string(&mut self, s: &str) -> Result<()> {
         s.chars()
             .map(|c| self.expect_char(c))
-            .skip_while(Result::is_ok)
-            .next()
+            .find(Result::is_err)
             .unwrap_or(Ok(()))
     }
 
@@ -358,10 +357,6 @@ impl Parser {
         self.source.get(self.current).cloned()
     }
 
-    fn peek_next(&self) -> Option<char> {
-        self.source.get(self.current + 1).cloned()
-    }
-
     fn extract_until(&mut self, c: char) {
         while let Some(current) = self.peek() {
             if current == c {
@@ -388,8 +383,4 @@ impl Parser {
     fn clear(&mut self) {
         self.start = self.current;
     }
-}
-
-fn is_digit(c: char) -> bool {
-    c.is_ascii_digit()
 }
