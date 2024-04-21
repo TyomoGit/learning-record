@@ -1,4 +1,4 @@
-use chrono::{Date, DateTime, Datelike, Local, NaiveDateTime, NaiveTime, TimeDelta};
+use chrono::{DateTime, Datelike, Local, NaiveDateTime, NaiveTime};
 
 use crate::ast::{self, EventInfo};
 
@@ -8,10 +8,6 @@ pub enum Error {
 }
 
 pub fn calc_weekly_records(file: &ast::File, today: DateTime<Local>) -> Result<NaiveTime, Error> {
-    if let Err(e) = check_is_past(&file.records, today) {
-        return Err(Error::NotPast(e));
-    }
-
     let (start_weekday, start_time) = match &file.settings {
         Some(settings) => (settings.start.weekday, settings.start.time),
         None => (
@@ -50,7 +46,7 @@ pub fn calc_weekly_records(file: &ast::File, today: DateTime<Local>) -> Result<N
         for event in &day_record.events {
             for event_info in &event.info {
                 let event_datetime = NaiveDateTime::new(day_record.date, event_info.time);
-                if event_datetime < start_date && event_datetime < start_date + TimeDelta::days(7) {
+                if event_datetime < start_date && event_datetime < today.naive_local() {
                     continue;
                 }
 
@@ -60,27 +56,4 @@ pub fn calc_weekly_records(file: &ast::File, today: DateTime<Local>) -> Result<N
     }
 
     Ok(sum)
-}
-
-fn check_is_past(records: &[ast::DayRecord], today: DateTime<Local>) -> Result<(), Vec<EventInfo>> {
-    return Ok(());
-    let (date, time) = (today.naive_local().date(), today.naive_local().time());
-    let result = records
-        .iter()
-        .flat_map(|day_record| {
-            day_record.events.iter().flat_map(|event| {
-                event
-                    .info
-                    .iter()
-                    .filter(|event_info| day_record.date >= date && event_info.time > time)
-            })
-        })
-        .cloned()
-        .collect::<Vec<_>>();
-
-    if result.is_empty() {
-        Ok(())
-    } else {
-        Err(result)
-    }
 }

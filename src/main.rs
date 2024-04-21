@@ -1,6 +1,6 @@
-use std::{env, fs};
+use std::{fs};
 
-use chrono::{Date, DateTime, Local, NaiveDate, NaiveDateTime, NaiveTime, TimeZone};
+use chrono::{DateTime, Local, NaiveDateTime, TimeZone};
 use clap::Parser as _;
 use parser::Parser;
 use processing::calc_weekly_records;
@@ -24,7 +24,7 @@ fn main() {
     let user_today: DateTime<Local> = Local.from_local_datetime(&user_today).unwrap();
 
     let path = cli.path;
-    let today = Local::now();
+    let _today = Local::now();
 
     let source = match fs::read_to_string(path) {
         Ok(source) => source,
